@@ -12,6 +12,8 @@ import { UserEntity } from './entities/user.entity';
 import { ReservationResolver } from './graphql/resolvers/reservation.resolver';
 import { RoomResolver } from './graphql/resolvers/room.resolver';
 import { UserResolver } from './graphql/resolvers/user.resolver';
+import { RoomsModule } from './rest/modules/rooms.module';
+import { ReservationsModule } from './rest/modules/reservations.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { UserResolver } from './graphql/resolvers/user.resolver';
     }),
     TypeOrmModule.forFeature([UserEntity, RoomEntity, ReservationsEntity]), //mettre les entities
     AuthModule,
+    RoomsModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserResolver, RoomResolver, ReservationResolver],
