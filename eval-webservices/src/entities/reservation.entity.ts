@@ -22,7 +22,7 @@ export class ReservationsEntity {
   @JoinColumn({ name: 'room_id' })
   room: UserEntity;
 
-  @Column({ length: 100 })
+  @Column()
   room_id: string;
 
   @CreateDateColumn()

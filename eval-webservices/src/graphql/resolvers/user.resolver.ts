@@ -25,14 +25,14 @@ export class UserType {
 }
 
 @Resolver(() => UserType)
-export class StudentResolver {
+export class UserResolver {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   @Query(() => [UserType])
-  async users(): Promise<UserEntity[]> {
+  async listUsers(): Promise<UserEntity[]> {
     return this.userRepository.find();
   }
 }
