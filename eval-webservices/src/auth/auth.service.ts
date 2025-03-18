@@ -19,7 +19,7 @@ export class AuthService {
   AUTHORIZATION_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/auth`;
   TOKEN_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/token`;
   USERINFO_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/userinfo`;
-  login(userLoginPayload: UserLoginPayload, res: Response) {
+  login(res: Response) {
     console.log('redirecting user to Keycloak for login');
     const authorizationUrl =
       `${this.AUTHORIZATION_ENDPOINT}?` +

@@ -7,7 +7,7 @@ import {
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { UserType } from './user.resolver';
+import { UserType } from './auth.resolver';
 import { RoomType } from './room.resolver';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
@@ -80,5 +80,11 @@ export class ReservationResolver {
       throw new Error(`Room with ID ${id} not found`);
     }
     return room;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteReservation(@Args('id') id: string): Promise<boolean> {
+    const result = await this.reservationRepository.delete(id);
+    return (result.affected ?? 0) > 0;
   }
 }

@@ -67,4 +67,10 @@ export class RoomResolver {
     }
     return room;
   }
+
+  @Mutation(() => Boolean)
+  async deleteRoom(@Args('id') id: string): Promise<boolean> {
+    const result = await this.roomRepository.delete(id);
+    return (result.affected ?? 0) > 0;
+  }
 }
