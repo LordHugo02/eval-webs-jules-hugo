@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package notifications;
+// Déclaration d'un message
+message CreateNotificationRequest {
+    int32 reservation_id = 1;
+    string message = 2;
+    string notification_date = 3;
+}
+
+message NotificationResponse {
+    int32 id = 1;
+    int32 reservation_id = 2;
+    string message = 3;
+    string notification_date = 4;
+}
+
+message UpdateNotificationRequest {
+    int32 id = 1;
+    string message = 2;
+    string notification_date = 3;
+}
+
+
+
+message GetNotificationRequest {
+    int32 id = 1;
+}
+
+
+
+message Empty {
+}
+
+service StudentService {
+  rpc CreateNotification (CreateNotificationRequest) returns (NotificationResponse);
+  rpc UpdateNotification    (UpdateNotificationRequest)    returns (NotificationResponse);
+  rpc GetNotification (GetNotificationRequest) returns (NotificationResponse);
+}
