@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Request, Response } from 'express';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -28,6 +29,10 @@ import { UserResolver } from './graphql/resolvers/user.resolver';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
+      context: ({ req, res }: { req: Request; res: Response }) => ({
+        req,
+        res,
+      }),
     }),
     TypeOrmModule.forFeature([UserEntity, RoomEntity, ReservationsEntity]), //mettre les entities
     AuthModule,

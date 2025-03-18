@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
   Args,
   Field,
@@ -7,13 +8,14 @@ import {
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { UserType } from './user.resolver';
-import { RoomType } from './room.resolver';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
 import { Repository } from 'typeorm';
 import { CreateReservationInput } from '../dto/create-reservation.input';
 import { UpdateReservationInput } from '../dto/update-reservation.input';
+import { RoomType } from './room.resolver';
+import { UserType } from './user.resolver';
 
 @ObjectType()
 export class ReservationType {
@@ -57,11 +59,13 @@ export class ReservationResolver {
   ) {}
 
   @Query(() => [ReservationType])
+  @UseGuards(AuthGuard)
   async listReservations(): Promise<ReservationsEntity[]> {
     return this.reservationRepository.find();
   }
 
   @Mutation(() => ReservationType)
+  @UseGuards(AuthGuard)
   async createReservation(
     @Args('input') input: CreateReservationInput,
   ): Promise<ReservationsEntity> {
@@ -70,6 +74,7 @@ export class ReservationResolver {
   }
 
   @Mutation(() => ReservationType, { nullable: true })
+  @UseGuards(AuthGuard)
   async updateReservation(
     @Args('id') id: string,
     @Args('input') input: UpdateReservationInput,

@@ -1,5 +1,7 @@
+import { UseGuards } from '@nestjs/common';
 import { Field, ID, ObjectType, Query, Resolver } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { ReservationType } from './reservation.resolver';
@@ -32,6 +34,7 @@ export class UserResolver {
   ) {}
 
   @Query(() => [UserType])
+  @UseGuards(AuthGuard)
   async listUsers(): Promise<UserEntity[]> {
     return this.userRepository.find();
   }
