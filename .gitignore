@@ -5,7 +5,7 @@ eval-webservices/.env.development
 eval-webservices/.env.test
 eval-webservices/dist
 
-eval-webservices/schema.gql
+eval-webservices//src/schema.gql
 
 
 
