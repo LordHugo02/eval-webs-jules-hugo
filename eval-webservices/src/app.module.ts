@@ -1,7 +1,9 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Request, Response } from 'express';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { ReservationsEntity } from './entities/reservation.entity';
 import { RoomEntity } from './entities/room.entity';
 import { UserEntity } from './entities/user.entity';
+import { LoginResolver } from './graphql/resolvers/login.resolver';
 import { ReservationResolver } from './graphql/resolvers/reservation.resolver';
 import { RoomResolver } from './graphql/resolvers/room.resolver';
 import { UserResolver } from './graphql/resolvers/user.resolver';
@@ -27,9 +30,27 @@ import { ReservationsModule } from './rest/modules/reservations.module';
       entities: [UserEntity, RoomEntity, ReservationsEntity], //mettre les entities
       synchronize: true, // false si vous avez déjà les tables
     }),
+    ClientsModule.register([
+      {
+        name: 'NOTIFICATION_PROTO_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          url: '0.0.0.0:50051',
+          package: 'notifications',
+          protoPath: join(
+            __dirname,
+            '../../notification-service/src/protos/spec.proto',
+          ),
+        },
+      },
+    ]),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
+      context: ({ req, res }: { req: Request; res: Response }) => ({
+        req,
+        res,
+      }),
     }),
     TypeOrmModule.forFeature([UserEntity, RoomEntity, ReservationsEntity]), //mettre les entities
     AuthModule,
@@ -37,6 +58,12 @@ import { ReservationsModule } from './rest/modules/reservations.module';
     ReservationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserResolver, RoomResolver, ReservationResolver],
+  providers: [
+    AppService,
+    UserResolver,
+    RoomResolver,
+    ReservationResolver,
+    LoginResolver,
+  ],
 })
 export class AppModule {}
