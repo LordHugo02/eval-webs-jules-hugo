@@ -13,7 +13,6 @@ export class AuthGuard implements CanActivate {
   constructor(private readonly authService: AuthService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let req: Request;
-
     if (context.getType() === 'http') {
       // ✅ Cas d'une requête REST
       req = context.switchToHttp().getRequest();
@@ -22,9 +21,8 @@ export class AuthGuard implements CanActivate {
       const gqlContext = GqlExecutionContext.create(context);
       req = gqlContext.getContext<{ req: Request }>().req;
     }
-    const accessToken: string | undefined = req.cookies?.[
-      'access_token'
-    ] as string;
+    const accessToken: string | undefined =
+      req.headers.authorization?.split(' ')[1];
 
     if (!accessToken) {
       throw new UnauthorizedException('No token provided');

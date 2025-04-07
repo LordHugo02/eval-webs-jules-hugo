@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import queryString from 'query-string';
+import * as queryString from 'query-string';
 
 type UserLoginPayload = {
   email: string;
@@ -19,7 +19,7 @@ export class AuthService {
   AUTHORIZATION_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/auth`;
   TOKEN_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/token`;
   USERINFO_ENDPOINT = `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/userinfo`;
-  login(userLoginPayload: UserLoginPayload, res: Response) {
+  loginByClientPortal(res: Response) {
     console.log('redirecting user to Keycloak for login');
     const authorizationUrl =
       `${this.AUTHORIZATION_ENDPOINT}?` +
@@ -30,6 +30,42 @@ export class AuthService {
         scope: 'openid profile email',
       });
     res.redirect(authorizationUrl);
+  }
+  async login(userLoginPayload: UserLoginPayload) {
+    const formData = new URLSearchParams({
+      client_id: this.CLIENT_ID,
+      client_secret: this.CLIENT_SECRET,
+      grant_type: 'password',
+      username: userLoginPayload.email,
+      password: userLoginPayload.password,
+      scope: 'openid profile email',
+    });
+
+    try {
+      // Using native fetch API
+      const response = await fetch(this.TOKEN_ENDPOINT, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      // Check for successful response
+      if (!response.ok) {
+        throw new Error(
+          `Keycloak authentication failed: ${response.statusText}`,
+        );
+      }
+
+      // Parse the JSON response
+      const data = await response.json();
+
+      return data.access_token;
+    } catch (error) {
+      console.error('Error fetching Keycloak token:', error);
+      throw new Error('Failed to fetch Keycloak token');
+    }
   }
 
   async callback(req: Request, res: Response) {

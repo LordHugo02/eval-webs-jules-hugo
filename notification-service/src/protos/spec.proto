@@ -32,7 +32,7 @@ message GetNotificationRequest {
 message Empty {
 }
 
-service StudentService {
+service NotificationService {
   rpc CreateNotification (CreateNotificationRequest) returns (NotificationResponse);
   rpc UpdateNotification    (UpdateNotificationRequest)    returns (NotificationResponse);
   rpc GetNotification (GetNotificationRequest) returns (NotificationResponse);

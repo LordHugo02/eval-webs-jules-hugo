@@ -11,14 +11,19 @@ type UserLoginPayload = {
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Get('login')
-  login(
+  @Get('loginByClientPortal')
+  loginByClientPortal(
     userLoginPayload: UserLoginPayload,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     console.log('login');
-    this.authService.login(userLoginPayload, res);
+    this.authService.loginByClientPortal(res);
+  }
+  @Get('login')
+  login(userLoginPayload: UserLoginPayload) {
+    console.log('login');
+    this.authService.login(userLoginPayload);
   }
 
   @Get('callback')

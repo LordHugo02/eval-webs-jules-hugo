@@ -18,6 +18,7 @@ export class NotificationService {
     data: CreateNotificationInput,
   ): Promise<NotificationEntity> {
     const notification = await this.notificationRepository.save(data);
+    console.log('Notification created:', notification);
     return notification;
   }
 

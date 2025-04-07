@@ -1,6 +1,5 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { InjectRepository } from '@nestjs/typeorm';
 import { NotificationService } from './notification.service';
 import {
   CreateNotificationInput,
@@ -9,10 +8,7 @@ import {
 
 @Controller('notifications')
 export class NotificationController {
-  constructor(
-    @InjectRepository(NotificationService)
-    private notificationService: NotificationService,
-  ) {}
+  constructor(private notificationService: NotificationService) {}
 
   @GrpcMethod('NotificationService', 'CreateNotification')
   async createNotification(data: CreateNotificationInput) {
