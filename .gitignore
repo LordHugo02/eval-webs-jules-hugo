@@ -6,3 +6,5 @@ eval-webservices/.env.test
 eval-webservices/dist
 eval-webservices/src/schema.gql
 
+node_modules
+
