@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateRoomDto {
-  @ApiProperty({ description: 'Name of the room', required: false })
+  @ApiProperty({ description: 'Name of the room', required: true })
   @IsString()
-  name?: string;
+  name: string;
 
-  @ApiProperty({ description: 'Capacity of the room', required: false })
+  @ApiProperty({ description: 'Capacity of the room', required: true })
   @IsNumber()
-  capacity?: number;
+  capacity: number;
 
-  @ApiProperty({ description: 'Description of the room', required: false })
+  @ApiProperty({ description: 'Location of the room', required: false })
+  @IsOptional()
   @IsString()
   location?: string;
 }

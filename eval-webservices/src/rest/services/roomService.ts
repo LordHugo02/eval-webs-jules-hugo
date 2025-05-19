@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { RoomEntity } from 'src/entities/room.entity';
-import { UpdateRoomDto } from 'src/rest/dto/update-room.dto';
 import { CreateRoomDto } from 'src/rest/dto/create-room.dto';
+import { UpdateRoomDto } from 'src/rest/dto/update-room.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RoomService {
@@ -21,8 +21,11 @@ export class RoomService {
   }
 
   // Find all rooms
-  async findAll(): Promise<RoomEntity[]> {
-    return await this.roomRepository.find();
+  async findAll(skip?: number, limit?: number): Promise<RoomEntity[]> {
+    return await this.roomRepository.find({
+      skip: skip || 0,
+      take: limit || 10,
+    });
   }
 
   // Find one room by ID

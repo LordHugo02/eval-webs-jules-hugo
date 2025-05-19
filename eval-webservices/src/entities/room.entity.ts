@@ -1,24 +1,29 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ReservationsEntity } from './reservations.entity';
 
 @Entity('rooms')
 export class RoomEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 100 })
+  @Column()
   name: string;
 
   @Column()
   capacity: number;
 
-  @Column({ length: 255 })
-  location: string;
+  @Column({ nullable: true })
+  location?: string;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @OneToMany(() => ReservationsEntity, (reservation) => reservation.room)
+  reservations: ReservationsEntity[];
 }

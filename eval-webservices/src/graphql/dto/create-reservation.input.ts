@@ -1,19 +1,23 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, ID, InputType } from '@nestjs/graphql';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class CreateReservationInput {
-  @Field()
-  user_id: string;
+  @Field(() => ID)
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
+  @Field(() => ID)
+  @IsString()
+  @IsNotEmpty()
+  roomId: string;
 
   @Field()
-  room_id: string;
+  @IsDate()
+  startTime: Date;
 
   @Field()
-  start_time: Date;
-
-  @Field()
-  end_time: Date;
-
-  @Field()
-  status: string;
+  @IsDate()
+  endTime: Date;
 }

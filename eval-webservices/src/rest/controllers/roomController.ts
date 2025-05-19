@@ -1,17 +1,20 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Patch,
-  Delete,
-  Body,
+  Post,
+  Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { RoomService } from '../services/roomService';
-import { RoomEntity } from 'src/entities/room.entity';
-import { UpdateRoomDto } from '../dto/update-room.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { RoomEntity } from 'src/entities/room.entity';
+import { CreateRoomDto } from '../dto/create-room.dto';
+import { UpdateRoomDto } from '../dto/update-room.dto';
+import { RoomService } from '../services/roomService';
 
 @ApiTags('rooms') // Ajoute une catégorie "rooms" dans Swagger
 @Controller('rooms')
@@ -21,8 +24,14 @@ export class RoomController {
   // Get all rooms
   @UseGuards(AuthGuard)
   @Get()
-  async findAll(): Promise<RoomEntity[]> {
-    return await this.roomService.findAll();
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async findAll(
+    @Query('skip') skip?: number,
+    @Query('limit') limit?: number,
+  ): Promise<{ rooms: RoomEntity[] }> {
+    const rooms = await this.roomService.findAll(skip, limit);
+    return { rooms };
   }
 
   // Get a single room by ID
@@ -32,9 +41,15 @@ export class RoomController {
     return await this.roomService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
+  @Post()
+  async create(@Body() createRoomDto: CreateRoomDto): Promise<RoomEntity> {
+    return await this.roomService.create(createRoomDto);
+  }
+
   // Update a room by ID
   @UseGuards(AuthGuard)
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateRoomDto: UpdateRoomDto,

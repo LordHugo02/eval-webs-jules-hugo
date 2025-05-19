@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
+import { Repository } from 'typeorm';
 import { CreateReservationDto } from '../dto/create-reservation.dto';
 import { UpdateReservationDto } from '../dto/update-reservation.dto';
 
@@ -22,8 +22,10 @@ export class ReservationService {
   }
 
   // Find all reservations
-  async findAll(): Promise<ReservationsEntity[]> {
+  async findAll(skip?: number, limit?: number): Promise<ReservationsEntity[]> {
     return await this.reservationRepository.find({
+      skip: skip || 0,
+      take: limit || 10,
       relations: ['user', 'room'],
     });
   }

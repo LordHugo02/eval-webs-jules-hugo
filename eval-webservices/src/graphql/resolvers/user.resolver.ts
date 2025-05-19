@@ -1,41 +1,35 @@
 import { UseGuards } from '@nestjs/common';
-import { Field, ID, ObjectType, Query, Resolver } from '@nestjs/graphql';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { UserEntity } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
-import { ReservationType } from './reservation.resolver';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthGuard } from '../../auth/auth.guard';
+import { UserService } from '../../rest/services/userService';
+import { LoginInput } from '../dto/login.input';
+import { User } from '../types/user.type';
 
-@ObjectType()
-export class UserType {
-  @Field(() => ID)
-  id: string;
-
-  @Field()
-  keycloak_id: string;
-
-  @Field()
-  email: string;
-
-  @Field()
-  created_at: Date;
-
-  @Field(() => [ReservationType], {
-    nullable: true,
-  })
-  reservations: ReservationType[];
-}
-
-@Resolver(() => UserType)
+@Resolver(() => User)
 export class UserResolver {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  @Query(() => [UserType])
+  @Query(() => [User])
   @UseGuards(AuthGuard)
-  async listUsers(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  async listUsers(
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<User[]> {
+    return await this.userService.findAll(skip, limit);
+  }
+
+  @Query(() => User, { nullable: true })
+  @UseGuards(AuthGuard)
+  async user(@Args('id') id: string): Promise<User> {
+    return await this.userService.findOne(id);
+  }
+
+  @Mutation(() => {
+    accessToken: string;
+  })
+  async login(
+    @Args('input') input: LoginInput,
+  ): Promise<{ accessToken: string }> {
+    return await this.userService.login(input);
   }
 }

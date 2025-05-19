@@ -3,6 +3,7 @@ import {
   Args,
   Field,
   ID,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -14,8 +15,10 @@ import { Observable } from 'rxjs';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
 import { Repository } from 'typeorm';
+import { ReservationService } from '../../rest/services/reservationServices';
 import { CreateReservationInput } from '../dto/create-reservation.input';
 import { UpdateReservationInput } from '../dto/update-reservation.input';
+import { Reservation } from '../types/reservation.type';
 import { RoomType } from './room.resolver';
 import { UserType } from './user.resolver';
 
@@ -59,7 +62,7 @@ interface NotificationService {
   getNotification(data: any): Observable<any>;
 }
 
-@Resolver(() => ReservationType)
+@Resolver(() => Reservation)
 export class ReservationResolver {
   private notificationService: NotificationService;
   constructor(
@@ -67,6 +70,7 @@ export class ReservationResolver {
     private readonly notificationClientGRPC: ClientGrpc,
     @InjectRepository(ReservationsEntity)
     private readonly reservationRepository: Repository<ReservationsEntity>,
+    private readonly reservationService: ReservationService,
   ) {}
 
   onModuleInit() {
@@ -76,41 +80,41 @@ export class ReservationResolver {
       );
   }
 
-  @Query(() => [ReservationType])
+  @Query(() => [Reservation])
   @UseGuards(AuthGuard)
-  async listReservations(): Promise<ReservationsEntity[]> {
-    return this.reservationRepository.find();
+  async listReservations(
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<Reservation[]> {
+    return await this.reservationService.findAll(skip, limit);
   }
 
-  @Mutation(() => ReservationType)
+  @Query(() => Reservation, { nullable: true })
+  @UseGuards(AuthGuard)
+  async reservation(@Args('id') id: string): Promise<Reservation> {
+    return await this.reservationService.findOne(id);
+  }
+
+  @Mutation(() => Reservation)
   @UseGuards(AuthGuard)
   async createReservation(
     @Args('input') input: CreateReservationInput,
-  ): Promise<ReservationsEntity> {
-    const reservation = this.reservationRepository.create(input);
-    this.notificationService.createNotification({
-      reservation_id: reservation.id,
-      message: 'Reservation created',
-    });
-
-    return this.reservationRepository.save(reservation);
+  ): Promise<Reservation> {
+    return await this.reservationService.create(input);
   }
 
-  @Mutation(() => ReservationType, { nullable: true })
+  @Mutation(() => Reservation)
   @UseGuards(AuthGuard)
   async updateReservation(
-    @Args('id') id: string,
     @Args('input') input: UpdateReservationInput,
-  ): Promise<ReservationsEntity> {
-    await this.reservationRepository.update(id, input);
-    this.notificationService.updateNotification({
-      reservation_id: id,
-      message: 'Reservation updated',
-    });
-    const room = await this.reservationRepository.findOne({ where: { id } });
-    if (!room) {
-      throw new Error(`Room with ID ${id} not found`);
-    }
-    return room;
+  ): Promise<Reservation> {
+    return await this.reservationService.update(input.id, input);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(AuthGuard)
+  async deleteReservation(@Args('id') id: string): Promise<boolean> {
+    await this.reservationService.remove(id);
+    return true;
   }
 }

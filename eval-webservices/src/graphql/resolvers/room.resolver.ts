@@ -1,75 +1,46 @@
 import { UseGuards } from '@nestjs/common';
-import {
-  Args,
-  Field,
-  ID,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-} from '@nestjs/graphql';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { RoomEntity } from 'src/entities/room.entity';
-import { Repository } from 'typeorm';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthGuard } from '../../auth/auth.guard';
+import { RoomService } from '../../rest/services/roomService';
 import { CreateRoomInput } from '../dto/create-room.input';
 import { UpdateRoomInput } from '../dto/update-room.input';
-import { ReservationType } from './reservation.resolver';
+import { Room } from '../types/room.type';
 
-@ObjectType()
-export class RoomType {
-  @Field(() => ID)
-  id: string;
-
-  @Field()
-  name: string;
-
-  @Field()
-  capacity: number;
-
-  @Field({ nullable: true })
-  location?: string;
-
-  @Field()
-  created_at: Date;
-
-  @Field(() => [ReservationType], {
-    nullable: true,
-  })
-  reservations: ReservationType[];
-}
-
-@Resolver(() => RoomType)
+@Resolver(() => Room)
 export class RoomResolver {
-  constructor(
-    @InjectRepository(RoomEntity)
-    private readonly roomRepository: Repository<RoomEntity>,
-  ) {}
+  constructor(private readonly roomService: RoomService) {}
 
-  @Query(() => [RoomType])
+  @Query(() => [Room])
   @UseGuards(AuthGuard)
-  async listRooms(): Promise<RoomEntity[]> {
-    return this.roomRepository.find();
+  async listRooms(
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<Room[]> {
+    return await this.roomService.findAll(skip, limit);
   }
 
-  @Mutation(() => RoomType)
+  @Query(() => Room, { nullable: true })
   @UseGuards(AuthGuard)
-  async createRoom(@Args('input') input: CreateRoomInput): Promise<RoomEntity> {
-    const user = this.roomRepository.create(input);
-    return this.roomRepository.save(user);
+  async room(@Args('id') id: string): Promise<Room> {
+    return await this.roomService.findOne(id);
   }
 
-  @Mutation(() => RoomType, { nullable: true })
+  @Mutation(() => Room)
   @UseGuards(AuthGuard)
-  async updateRoom(
-    @Args('id') id: string,
-    @Args('input') input: UpdateRoomInput,
-  ): Promise<RoomEntity> {
-    await this.roomRepository.update(id, input);
-    const room = await this.roomRepository.findOne({ where: { id } });
-    if (!room) {
-      throw new Error(`Room with ID ${id} not found`);
-    }
-    return room;
+  async createRoom(@Args('input') input: CreateRoomInput): Promise<Room> {
+    return await this.roomService.create(input);
+  }
+
+  @Mutation(() => Room)
+  @UseGuards(AuthGuard)
+  async updateRoom(@Args('input') input: UpdateRoomInput): Promise<Room> {
+    return await this.roomService.update(input.id, input);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(AuthGuard)
+  async deleteRoom(@Args('id') id: string): Promise<boolean> {
+    await this.roomService.remove(id);
+    return true;
   }
 }

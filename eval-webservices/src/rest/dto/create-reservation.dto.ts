@@ -1,25 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsString, IsDate, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsISO8601, IsNumber } from 'class-validator';
 
 export class CreateReservationDto {
-  @ApiProperty({ description: 'User ID associated with the reservation' })
-  @IsUUID()
-  user_id: string;
+  @ApiProperty({ description: 'User ID', required: true })
+  @IsNumber()
+  userId: number;
 
-  @ApiProperty({ description: 'Room ID associated with the reservation' })
-  @IsUUID()
-  room_id: string;
+  @ApiProperty({ description: 'Room ID', required: true })
+  @IsNumber()
+  roomId: number;
 
-  @ApiProperty({ description: 'Start time of the reservation' })
-  @IsDate()
-  start_time: Date;
+  @ApiProperty({
+    description: 'Start time in ISO8601 format (YYYY-MM-DDTHH:mm:ss)',
+    required: true,
+    example: '2024-03-20T14:30:00',
+  })
+  @IsISO8601()
+  startTime: string;
 
-  @ApiProperty({ description: 'End time of the reservation' })
-  @IsDate()
-  end_time: Date;
-
-  @ApiProperty({ description: 'Status of the reservation' })
-  @IsString()
-  status: string;
+  @ApiProperty({
+    description: 'End time in ISO8601 format (YYYY-MM-DDTHH:mm:ss)',
+    required: true,
+    example: '2024-03-20T15:30:00',
+  })
+  @IsISO8601()
+  endTime: string;
 }

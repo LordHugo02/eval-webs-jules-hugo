@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsOptional, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateRoomDto {
   @ApiProperty({ description: 'Name of the room', required: false })
@@ -13,7 +13,7 @@ export class UpdateRoomDto {
   @IsNumber()
   capacity?: number;
 
-  @ApiProperty({ description: 'Description of the room', required: false })
+  @ApiProperty({ description: 'Location of the room', required: false })
   @IsOptional()
   @IsString()
   location?: string;
