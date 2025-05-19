@@ -23,7 +23,7 @@ export class AuthService {
     console.log('redirecting user to Keycloak for login');
     const authorizationUrl =
       `${this.AUTHORIZATION_ENDPOINT}?` +
-      queryString.stringify({
+      queryString.default.stringify({
         client_id: this.CLIENT_ID,
         response_type: 'code',
         redirect_uri: this.REDIRECT_URI,
@@ -84,7 +84,7 @@ export class AuthService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: queryString.stringify({
+        body: queryString.default.stringify({
           grant_type: 'authorization_code',
           code: code as string,
           client_id: this.CLIENT_ID,
@@ -137,7 +137,7 @@ export class AuthService {
     // Construct the logout URL
     const logoutUrl =
       `${this.KEYCLOAK_URL}/realms/${this.REALM_NAME}/protocol/openid-connect/logout?` +
-      queryString.stringify({
+      queryString.default.stringify({
         id_token_hint: idToken,
         post_logout_redirect_uri: `http://localhost:${this.PORT}/`,
       });
