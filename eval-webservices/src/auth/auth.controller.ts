@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  BadRequestException,
+  UnauthorizedException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 
@@ -18,8 +28,29 @@ export class AuthController {
   }
   @Post('login')
   async login(@Body() payload: UserLoginPayload) {
-    const token = await this.authService.login(payload);
-    return token; // Nest gère le res.status(200).json(token)
+    try {
+      const token = await this.authService.login(payload);
+      if (!token || token.error) {
+        // Gestion des erreurs retournées par Keycloak
+        if (token.error === 'invalid_grant') {
+          throw new UnauthorizedException('Invalid credentials');
+        }
+        throw new BadRequestException(
+          token.error_description || 'Authentication failed',
+        );
+      }
+      return token;
+    } catch (error) {
+      // Gestion des erreurs inattendues
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      console.error('Login error:', error);
+      throw new InternalServerErrorException('Internal server error');
+    }
   }
 
   @Get('callback')
