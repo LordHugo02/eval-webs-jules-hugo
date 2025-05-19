@@ -26,12 +26,14 @@ export class RoomController {
   }
 
   // Get a single room by ID
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<RoomEntity> {
     return await this.roomService.findOne(id);
   }
 
   // Update a room by ID
+  @UseGuards(AuthGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -41,6 +43,7 @@ export class RoomController {
   }
 
   // Delete a room by ID
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     return await this.roomService.remove(id);
