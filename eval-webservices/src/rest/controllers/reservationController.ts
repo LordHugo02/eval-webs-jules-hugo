@@ -14,7 +14,7 @@ import { CreateReservationDto } from '../dto/create-reservation.dto';
 import { UpdateReservationDto } from '../dto/update-reservation.dto';
 
 @ApiTags('reservations') // Ajoute une catégorie "reservations" dans Swagger
-@Controller('reservations')
+@Controller('api/reservations')
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 

@@ -14,7 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('rooms') // Ajoute une catégorie "rooms" dans Swagger
-@Controller('rooms')
+@Controller('api/rooms')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
