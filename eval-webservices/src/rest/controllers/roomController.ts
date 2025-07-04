@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Delete,
   Body,
   UseGuards,
@@ -13,6 +14,7 @@ import { RoomEntity } from 'src/entities/room.entity';
 import { UpdateRoomDto } from '../dto/update-room.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CreateRoomDto } from '../dto/create-room.dto';
 
 @ApiBearerAuth()
 @ApiTags('rooms') // Ajoute une catégorie "rooms" dans Swagger
@@ -32,6 +34,13 @@ export class RoomController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<RoomEntity> {
     return await this.roomService.findOne(id);
+  }
+
+  // Create a new room
+  @UseGuards(AuthGuard)
+  @Post()
+  async create(@Body() createRoomDto: CreateRoomDto): Promise<RoomEntity> {
+    return await this.roomService.create(createRoomDto);
   }
 
   // Update a room by ID
