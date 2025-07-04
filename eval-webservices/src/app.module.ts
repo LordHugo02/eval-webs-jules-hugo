@@ -52,7 +52,12 @@ import { ReservationsModule } from './rest/modules/reservations.module';
         res,
       }),
     }),
-    TypeOrmModule.forFeature([UserEntity, RoomEntity, ReservationsEntity]), //mettre les entities
+    TypeOrmModule.forFeature([
+      UserEntity,
+      RoomEntity,
+      ReservationsEntity,
+      UserEntity,
+    ]), //mettre les entities
     AuthModule,
     RoomsModule,
     ReservationsModule,
