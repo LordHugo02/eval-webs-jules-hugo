@@ -1,13 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import { validate as isUuid } from 'uuid';
 
 @Injectable()
 export class UserService {
-  findOne(id: string): UserEntity | PromiseLike<UserEntity> {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -18,8 +20,10 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  // Find user by ID
-  async findById(id: string): Promise<UserEntity> {
+  async findOne(id: string): Promise<UserEntity> {
+    if (!isUuid(id)) {
+      throw new BadRequestException('Invalid UUID format');
+    }
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

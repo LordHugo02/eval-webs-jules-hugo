@@ -7,12 +7,13 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReservationService } from '../services/reservationServices';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
 import { CreateReservationDto } from '../dto/create-reservation.dto';
 import { UpdateReservationDto } from '../dto/update-reservation.dto';
 
+@ApiBearerAuth()
 @ApiTags('reservations') // Ajoute une catégorie "reservations" dans Swagger
 @Controller('api/reservations')
 export class ReservationController {

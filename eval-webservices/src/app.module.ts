@@ -17,6 +17,8 @@ import { RoomResolver } from './graphql/resolvers/room.resolver';
 import { UserResolver } from './graphql/resolvers/user.resolver';
 import { RoomsModule } from './rest/modules/rooms.module';
 import { ReservationsModule } from './rest/modules/reservations.module';
+import { Users } from 'keycloak-admin/lib/resources/users';
+import { UsersModule } from './rest/modules/users.module';
 
 @Module({
   imports: [
@@ -61,6 +63,7 @@ import { ReservationsModule } from './rest/modules/reservations.module';
     AuthModule,
     RoomsModule,
     ReservationsModule,
+    UsersModule, // Assurez-vous que ce module est importé
   ],
   controllers: [AppController],
   providers: [

@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReservationsEntity } from 'src/entities/reservation.entity';
 import { CreateReservationDto } from '../dto/create-reservation.dto';
 import { UpdateReservationDto } from '../dto/update-reservation.dto';
+import { validate as isUuid } from 'uuid';
 
 @Injectable()
 export class ReservationService {
@@ -16,6 +21,35 @@ export class ReservationService {
   async create(
     createReservationDto: CreateReservationDto,
   ): Promise<ReservationsEntity> {
+    if (
+      !isUuid(createReservationDto.user_id) ||
+      !isUuid(createReservationDto.room_id)
+    ) {
+      throw new BadRequestException('user_id and room_id must be valid UUIDs');
+    }
+
+    // Vérifie que le user existe
+    const user = await this.reservationRepository.manager.findOne(
+      'UserEntity',
+      {
+        where: { id: createReservationDto.user_id },
+      },
+    );
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+
+    // Vérifie que la room existe
+    const room = await this.reservationRepository.manager.findOne(
+      'RoomEntity',
+      {
+        where: { id: createReservationDto.room_id },
+      },
+    );
+    if (!room) {
+      throw new BadRequestException('Room does not exist');
+    }
+
     const newReservation =
       this.reservationRepository.create(createReservationDto);
     return await this.reservationRepository.save(newReservation);
