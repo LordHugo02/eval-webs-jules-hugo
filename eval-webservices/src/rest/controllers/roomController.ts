@@ -7,12 +7,14 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
+
 import { RoomService } from '../services/roomService';
 import { RoomEntity } from 'src/entities/room.entity';
 import { UpdateRoomDto } from '../dto/update-room.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+@ApiBearerAuth()
 @ApiTags('rooms') // Ajoute une catégorie "rooms" dans Swagger
 @Controller('api/rooms')
 export class RoomController {

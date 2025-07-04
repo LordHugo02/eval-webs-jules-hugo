@@ -45,22 +45,19 @@ export class AuthService {
       // Using native fetch API
       const response = await fetch(this.TOKEN_ENDPOINT, {
         method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
       });
-
-      // Check for successful response
-      if (!response.ok) {
-        throw new Error(
-          `Keycloak authentication failed: ${response.statusText}`,
-        );
-      }
-
-      // Parse the JSON response
       const data = await response.json();
-
+      console.log(
+        'Keycloak token endpoint response:',
+        data,
+        'Status:',
+        response.status,
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch Keycloak token');
+      }
       return data.access_token;
     } catch (error) {
       console.error('Error fetching Keycloak token:', error);

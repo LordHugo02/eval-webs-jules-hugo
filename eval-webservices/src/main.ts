@@ -13,6 +13,7 @@ async function bootstrap() {
     .setDescription('The reservations API description')
     .setVersion('1.0')
     .addTag('reservations')
+    .addBearerAuth()
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
