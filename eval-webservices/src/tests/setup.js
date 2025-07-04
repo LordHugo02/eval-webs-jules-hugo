@@ -58,7 +58,6 @@ async function getKeycloakAdmToken() {
  */
 async function getKeycloakAdminToken() {
   try {
-
     const res = await request(process.env.KEYCLOAK_URL)
       .post(`/realms/master/protocol/openid-connect/token`)
       .type('form')
@@ -139,7 +138,7 @@ async function verifyJwtToken(token) {
 // Hook Jest appelé avant tous les tests
 beforeAll(async () => {
   await getKeycloakUsrToken();
-  await getKeycloakAdminToken()
+  await getKeycloakAdminToken();
   await getKeycloakAdmToken();
 }, 30000); // Timeout plus large si nécessaire
 

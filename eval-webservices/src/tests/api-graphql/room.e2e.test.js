@@ -1,7 +1,6 @@
 require('dotenv').config();
-const axios = require('axios');
-const {getUsrToken} = require('../setup');
-const {graphqlRequest} = require("../utils/graphql.utils");
+const { getUsrToken } = require('../setup');
+const { graphqlRequest } = require('../utils/graphql.utils');
 
 describe('Rooms E2E Tests', () => {
   let token;
@@ -55,7 +54,7 @@ describe('Rooms E2E Tests', () => {
       }
     `;
 
-    const variables = {id: createdRoomId};
+    const variables = { id: createdRoomId };
 
     const data = await graphqlRequest(query, variables, token);
 
@@ -131,7 +130,7 @@ describe('Rooms E2E Tests', () => {
         deleteRoom(id: $id)
       }
     `;
-    const variables = {id: createdRoomId};
+    const variables = { id: createdRoomId };
 
     const data = await graphqlRequest(mutation, variables, token);
 
@@ -150,9 +149,8 @@ describe('Rooms E2E Tests', () => {
       }
     `;
 
-      const variables = {id: createdRoomId};
-      const data = await graphqlRequest(query, variables, token);
-
+      const variables = { id: createdRoomId };
+      await graphqlRequest(query, variables, token);
     } catch (err) {
       expect(err).toBeDefined();
       // expect array

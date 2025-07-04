@@ -1,5 +1,4 @@
-const axios = require("axios");
-const {AxiosError} = require("axios");
+const axios = require('axios');
 
 const BASE_URL = process.env.API_GRAPHQL_URL || 'http://localhost:4000/graphql';
 
@@ -13,13 +12,13 @@ const BASE_URL = process.env.API_GRAPHQL_URL || 'http://localhost:4000/graphql';
 const graphqlQuery = async (query, variables, token) => {
   const response = await axios.post(
     BASE_URL,
-    {query, variables},
+    { query, variables },
     {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   if (response.data.errors) {
@@ -27,8 +26,8 @@ const graphqlQuery = async (query, variables, token) => {
     throw response.data.errors;
   }
   return response.data.data;
-}
+};
 
 module.exports = {
-  graphqlRequest: graphqlQuery
-}
+  graphqlRequest: graphqlQuery,
+};
